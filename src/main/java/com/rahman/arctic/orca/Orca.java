@@ -61,6 +61,9 @@ public class Orca {
 			.csrf(csrf ->
 				csrf.disable()
 			)
+			.cors(cors ->
+				cors.disable()
+			)
 			.authorizeHttpRequests(authorizeRequests -> 
 				authorizeRequests
 					.requestMatchers(HttpMethod.POST, "/range-api/v1/regularUser").hasAnyAuthority("ADMIN", "USER")
