@@ -16,7 +16,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -64,7 +63,7 @@ public class Orca {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/**").allowedOrigins("*");
+                registry.addMapping("/**").allowedOrigins("http://localhost:5173").allowedHeaders("*").allowCredentials(true);;
             }
         };
     }
@@ -73,12 +72,15 @@ public class Orca {
 	SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		http
 			.csrf(csrf -> 
-				csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+				csrf.disable()
+				//csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
 			)
 			.authorizeHttpRequests(authorizeRequests -> 
 				authorizeRequests
+					.requestMatchers(HttpMethod.POST, "/range-api/v1/authenticate").permitAll()
+					.requestMatchers(HttpMethod.GET, "/range-api/v1/csrf-token").permitAll()
 					.requestMatchers(HttpMethod.POST, "/range-api/v1/regularUser").hasAnyAuthority("ADMIN", "USER")
-					.requestMatchers("/**").permitAll()
+					.requestMatchers(HttpMethod.GET, "/range-api/v1/exercise").hasAnyAuthority("ADMIN", "USER")
 					.anyRequest().authenticated()
 			).sessionManagement(session -> 
 				session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
