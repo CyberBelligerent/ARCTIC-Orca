@@ -69,9 +69,9 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 				throw new ServletException("Unable to find User");
 			}
 			
-			if(!isValidDeviceInfo(user, deviceInfo)) {
-				throw new ServletException("Device Info Not In User's History");
-			}
+//			if(!isValidDeviceInfo(user, deviceInfo)) {
+//				throw new ServletException("Device Info Not In User's History");
+//			}
 			
 			if(user != null && tokenUtil.validateToken(jwtToken, user)) {
 				UsernamePasswordAuthenticationToken userAuth = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
@@ -94,9 +94,9 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 	            throw new ServletException("Unable to find User");
 	        }
 
-	        if (!isValidDeviceInfo(user, deviceInfo)) {
-	            throw new ServletException("Device Info Not In User's History");
-	        }
+//	        if (!isValidDeviceInfo(user, deviceInfo)) {
+//	            throw new ServletException("Device Info Not In User's History");
+//	        }
 
 	        if (user != null && tokenUtil.canTokenBeRefreshed(jwtToken, user.getLastPasswordReset())) {
 	            // Token can be refreshed, generate a new token
@@ -112,8 +112,8 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 	    }
 	}
 	
-	private boolean isValidDeviceInfo(IUserDetails user, String ip) {
-		return user.getDeviceHistory().contains(ip);
-	}
+//	private boolean isValidDeviceInfo(IUserDetails user, String ip) {
+//		return user.getDeviceHistory().contains(ip);
+//	}
 	
 }

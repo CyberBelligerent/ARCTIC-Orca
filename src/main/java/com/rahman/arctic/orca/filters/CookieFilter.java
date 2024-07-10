@@ -81,9 +81,9 @@ public class CookieFilter extends OncePerRequestFilter {
 						throw new ServletException("Unable to find User");
 					}
 					
-					if(!isValidDeviceInfo(user, deviceInfo)) {
-						throw new ServletException("Device Info Not In User's History");
-					}
+//					if(!isValidDeviceInfo(user, deviceInfo)) {
+//						throw new ServletException("Device Info Not In User's History");
+//					}
 					
 					// Officially log in the user if everything is okay
 					if(user != null && tokenUtil.validateToken(jwtToken, user)) {
@@ -109,9 +109,9 @@ public class CookieFilter extends OncePerRequestFilter {
 	            throw new ServletException("Unable to find User");
 	        }
 
-	        if (!isValidDeviceInfo(user, deviceInfo)) {
-	            throw new ServletException("Device Info Not In User's History");
-	        }
+//	        if (!isValidDeviceInfo(user, deviceInfo)) {
+//	            throw new ServletException("Device Info Not In User's History");
+//	        }
 
 	        if (user != null && tokenUtil.canTokenBeRefreshed(jwtToken, user.getLastPasswordReset())) {
 	            // Token can be refreshed, generate a new token
@@ -127,8 +127,8 @@ public class CookieFilter extends OncePerRequestFilter {
 	    }
 	}
 	
-	private boolean isValidDeviceInfo(IUserDetails user, String ip) {
-		return user.getDeviceHistory().contains(ip);
-	}
+//	private boolean isValidDeviceInfo(IUserDetails user, String ip) {
+//		return user.getDeviceHistory().contains(ip);
+//	}
 	
 }
