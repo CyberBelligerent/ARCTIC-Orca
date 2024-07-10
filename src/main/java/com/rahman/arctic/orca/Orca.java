@@ -16,6 +16,9 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import com.rahman.arctic.orca.filters.CookieFilter;
 import com.rahman.arctic.orca.filters.JwtRequestFilter;
@@ -56,13 +59,21 @@ public class Orca {
 	}
 
 	@Bean
+    public WebMvcConfigurer corsConfigurer()
+    {
+        return new WebMvcConfigurer() {
+            @Override
+            public void addCorsMappings(CorsRegistry registry) {
+                registry.addMapping("/**").allowedOrigins("*");
+            }
+        };
+    }
+	
+	@Bean
 	SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		http
-			.csrf(csrf ->
-				csrf.disable()
-			)
-			.cors(cors ->
-				cors.disable()
+			.csrf(csrf -> 
+				csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
 			)
 			.authorizeHttpRequests(authorizeRequests -> 
 				authorizeRequests
