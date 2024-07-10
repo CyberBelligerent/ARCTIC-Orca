@@ -81,6 +81,7 @@ public class Orca {
 					.requestMatchers(HttpMethod.GET, "/range-api/v1/csrf-token").permitAll()
 					.requestMatchers(HttpMethod.POST, "/range-api/v1/regularUser").hasAnyAuthority("ADMIN", "USER")
 					.requestMatchers(HttpMethod.GET, "/range-api/v1/exercise").hasAnyAuthority("ADMIN", "USER")
+					.requestMatchers("/iceberg-api/v1/**", "/range-api/v1/provider/*").hasAnyAuthority("ADMIN", "USER")
 					.anyRequest().authenticated()
 			).sessionManagement(session -> 
 				session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
