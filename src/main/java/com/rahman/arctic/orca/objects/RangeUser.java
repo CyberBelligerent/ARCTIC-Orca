@@ -5,7 +5,6 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.UUID;
 
 import com.rahman.arctic.orca.objects.role.Role;
 
@@ -28,10 +27,8 @@ import lombok.Data;
 @Entity
 @Data
 public class RangeUser {
-
-	@Id
-	private String id;
 	
+	@Id
 	@Column(name = "user_username")
 	private String username;
 	private String name;
@@ -48,13 +45,7 @@ public class RangeUser {
 	@ElementCollection
 	private Set<String> knownDevices = new HashSet<>();
 	
-	public RangeUser() {
-		id = UUID.randomUUID().toString();
-	}
-	
-	public RangeUser(String user) {
-		this();
-		username = user;
-	}
+	@ElementCollection
+	private Set<String> profileIdReference = new HashSet<>();
 	
 }
