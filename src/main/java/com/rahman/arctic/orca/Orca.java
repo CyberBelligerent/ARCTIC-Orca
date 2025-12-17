@@ -3,7 +3,6 @@ package com.rahman.arctic.orca;
 import java.security.SecureRandom;
 
 import org.springframework.context.annotation.Bean;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -62,20 +61,17 @@ public class Orca {
 			.csrf(csrf -> 
 				csrf.disable()
 				//csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+		// csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+			.authorizeHttpRequests(authorizeRequests -> authorizeRequests.anyRequest().permitAll()
+//					.requestMatchers(HttpMethod.POST, "/range-api/v1/authenticate").permitAll()
+//					.requestMatchers(HttpMethod.GET, "/range-api/v1/csrf-token", "/range-api/v1/provider/*").permitAll()
+//					.requestMatchers(HttpMethod.POST, "/range-api/v1/regularUser").hasAnyAuthority("ADMIN", "USER")
+//					.requestMatchers("/range-api/v1/exercise/**").hasAnyAuthority("ADMIN", "USER")
+//					.requestMatchers("/iceberg-api/v1/**", "/range-api/v1/provider/*").hasAnyAuthority("ADMIN", "USER")
+//					.anyRequest().authenticated()
 			)
-			.authorizeHttpRequests(authorizeRequests -> 
-				authorizeRequests
-					.requestMatchers(HttpMethod.POST, "/range-api/v1/authenticate").permitAll()
-					.requestMatchers(HttpMethod.GET, "/range-api/v1/csrf-token").permitAll()
-					.requestMatchers(HttpMethod.POST, "/range-api/v1/regularUser").hasAnyAuthority("ADMIN", "USER")
-					.requestMatchers(HttpMethod.GET, "/range-api/v1/exercise").hasAnyAuthority("ADMIN", "USER")
-					.requestMatchers("/iceberg-api/v1/**", "/range-api/v1/provider/*").hasAnyAuthority("ADMIN", "USER")
-					.anyRequest().authenticated()
-			).sessionManagement(session -> 
-				session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-			);
-		
-		http.addFilterBefore(cookieFilter, UsernamePasswordAuthenticationFilter.class);
+
+//		http.addFilterBefore(cookieFilter, UsernamePasswordAuthenticationFilter.class);
 		http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 		return http.build();
 	}
