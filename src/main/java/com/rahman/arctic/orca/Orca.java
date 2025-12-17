@@ -2,11 +2,7 @@ package com.rahman.arctic.orca;
 
 import java.security.SecureRandom;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -15,15 +11,14 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import com.rahman.arctic.orca.filters.JwtRequestFilter;
 import com.rahman.arctic.orca.utils.ArcticUserService;
 
-@Configuration
-@EnableJpaRepositories(basePackages = {"com.rahman.arctic.orca.repos"})
-@EntityScan("com.rahman.arctic.orca.objects")
+@Service
 @EnableWebSecurity
 public class Orca {
 
