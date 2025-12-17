@@ -31,7 +31,9 @@ public class Dev {
 		if(!rr.existsByRole(UserRole.ADMIN)) rr.save(r);
 		
 		RangeUser ru = new RangeUser("Admin");
-		ru.setPassword(new BCryptPasswordEncoder().encode("1qaz2wsx!QAZ@WSX"));
+		RangeUser ru = new RangeUser();
+		ru.setUsername("admin");
+		ru.setPassword(new BCryptPasswordEncoder().encode("changeme"));
 		List<Role> roles = new ArrayList<>();
 		roles.add(r);
 		ru.setUserRoles(roles);
