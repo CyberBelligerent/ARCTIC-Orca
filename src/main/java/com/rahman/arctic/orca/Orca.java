@@ -29,19 +29,17 @@ import com.rahman.arctic.orca.utils.IUserService;
 @EnableWebSecurity
 public class Orca {
 
-	public Orca() {
-		System.out.println("Enabling Service: Orca");
-	}
-	
-	@Autowired
-	private JwtRequestFilter jwtFilter;
+	private final JwtRequestFilter jwtFilter;
 
-	@Autowired
-	private CookieFilter cookieFilter;
+//	private final CookieFilter cookieFilter;
 
 	@Bean
 	UserDetailsService userDetailsService() {
 		return new IUserService();
+	public Orca(JwtRequestFilter jwt/*, CookieFilter cookie*/) {
+		System.out.println("Enabling Service: Orca");
+		jwtFilter = jwt;
+//		cookieFilter = cookie;
 	}
 
 	@Bean
