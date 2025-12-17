@@ -30,7 +30,6 @@ public class Dev {
 		r.setRole(UserRole.ADMIN);
 		if(!rr.existsByRole(UserRole.ADMIN)) rr.save(r);
 		
-		RangeUser ru = new RangeUser("Admin");
 		RangeUser ru = new RangeUser();
 		ru.setUsername("admin");
 		ru.setPassword(new BCryptPasswordEncoder().encode("changeme"));
