@@ -2,21 +2,21 @@ package com.rahman.arctic.orca.filters;
 
 import java.io.IOException;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.rahman.arctic.orca.utils.IUserDetails;
-import com.rahman.arctic.orca.utils.IUserService;
+import com.rahman.arctic.orca.utils.ArcticUserDetails;
+import com.rahman.arctic.orca.utils.ArcticUserService;
 import com.rahman.arctic.orca.utils.JwtTokenUtil;
 
 import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.MalformedJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -26,45 +26,87 @@ import jakarta.servlet.http.HttpServletResponse;
  *
  */
 @Component
-@Order(2)
+//@Order(2)
 public class JwtRequestFilter extends OncePerRequestFilter {
 
-	@Autowired
-	private IUserService userDetails;
-
-	@Autowired
+	private ArcticUserService userDetails;
 	private JwtTokenUtil tokenUtil;
+	
+	public JwtRequestFilter(ArcticUserService aus, JwtTokenUtil tu) {
+		userDetails = aus;
+		tokenUtil = tu;
+	}
+	
+	private String checkForCookie(HttpServletRequest request) {
+		String result = null;
+		Cookie[] cookies = request.getCookies();
+		if(cookies != null) {
+			Cookie c = null;
+			for(Cookie cookie : cookies) {
+				if(cookie.getName().equals("token")) {
+					c = cookie;
+					break;
+				}
+			}
+			
+			if(c != null && c.getValue() != null && !c.getValue().isEmpty()) {
+				return c.getValue();
+			}
+		}
+		
+		return result;
+	}
+	
+	private String checkForToken(HttpServletRequest request) {
+		String result = null;
+		final String requestTokenHeader = request.getHeader("Authorization");
+		
+		if(requestTokenHeader != null && requestTokenHeader.startsWith("Bearer ")) {
+			return requestTokenHeader.substring(7);
+		}
+		
+		return result;
+	}
 	
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
-		final String requestTokenHeader = request.getHeader("Authorization");
+		
+		String jwtToken = null;
+		
+		jwtToken = checkForToken(request);
+		if(jwtToken == null) {
+			jwtToken = checkForCookie(request);
+		}
+		
+		if(jwtToken == null) {
+			filterChain.doFilter(request, response);
+			return;
+		}
 		
 		String username = null;
-		String jwtToken = null;
 		String deviceInfo = null;
 		
-		if(requestTokenHeader != null && requestTokenHeader.startsWith("Bearer ")) {
-			// Grab the actual token after Bearer
-			jwtToken = requestTokenHeader.substring(7);
-			try {
-				username = tokenUtil.getUsernameFromToken(jwtToken);
-				deviceInfo = tokenUtil.getClaimFromToken(jwtToken, claims -> claims.get("device_info", String.class));
-			} catch (IllegalArgumentException e ) {
-				System.out.println("Unable to get JWT Token Username or Device Info");
-			} catch (ExpiredJwtException e) {
-				handleTokenExpiration(request, response, username, deviceInfo, jwtToken);
-	            return;
-			}
-		} else {
-			// logger.warn("JWT Token does not start with Bearer");
+		// Attempt to grab username from the cookie
+		try {
+			username = tokenUtil.getUsernameFromToken(jwtToken);
+			deviceInfo = tokenUtil.getClaimFromToken(jwtToken, claims -> claims.get("device_info", String.class));
+		} catch (IllegalArgumentException e ) {
+//			System.out.println("Unable to get JWT Token Username");
+			filterChain.doFilter(request, response);
+			return;
+		} catch (ExpiredJwtException e) {
+			handleTokenExpiration(request, response, username, deviceInfo, jwtToken);
+			return;
+		} catch (MalformedJwtException e) {
+			throw new ServletException("Unable to parse JWT");
 		}
 		
 		if(username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-			IUserDetails user = null;
+			ArcticUserDetails user = null;
 			
 			try {
-				user = (IUserDetails) userDetails.loadUserByUsername(username);
+				user = (ArcticUserDetails) userDetails.loadUserByUsername(username);
 			} catch (Exception e) {
 				throw new ServletException("Unable to find User");
 			}
@@ -86,10 +128,10 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 	private void handleTokenExpiration(HttpServletRequest request, HttpServletResponse response, String username, String deviceInfo, String jwtToken)
 	        throws IOException, ServletException {
 	    if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-	        IUserDetails user = null;
+	    	ArcticUserDetails user = null;
 
 	        try {
-	            user = (IUserDetails) userDetails.loadUserByUsername(username);
+	            user = (ArcticUserDetails) userDetails.loadUserByUsername(username);
 	        } catch (Exception e) {
 	            throw new ServletException("Unable to find User");
 	        }
