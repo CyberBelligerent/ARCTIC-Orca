@@ -17,12 +17,12 @@ import com.rahman.arctic.orca.objects.RangeUser;
  * @author SGT Rahman
  *
  */
-public class IUserDetails implements UserDetails {
+public class ArcticUserDetails implements UserDetails {
 	
 	private static final long serialVersionUID = 5655820609682347075L;
 	private RangeUser user;
 	
-	public IUserDetails(RangeUser iu) {
+	public ArcticUserDetails(RangeUser iu) {
 		user = iu;
 	}
 	
@@ -33,6 +33,10 @@ public class IUserDetails implements UserDetails {
 			auths.add(new SimpleGrantedAuthority(e.getRole().toString()));
 		});
 		return auths;
+	}
+	
+	public RangeUser getUser() {
+		return user;
 	}
 
 	@Override

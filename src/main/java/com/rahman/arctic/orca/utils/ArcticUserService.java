@@ -1,6 +1,5 @@
 package com.rahman.arctic.orca.utils;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -15,16 +14,19 @@ import com.rahman.arctic.orca.repos.UserRepo;
  *
  */
 @Service
-public class IUserService implements UserDetailsService {
+public class ArcticUserService implements UserDetailsService {
 
-	@Autowired
 	private UserRepo userRepo;
+	
+	public ArcticUserService(UserRepo ur) {
+		userRepo = ur;
+	}
 	
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		RangeUser iu = userRepo.findByUsernameIgnoreCase(username).orElse(null);
 		if(iu == null) throw new UsernameNotFoundException("User not found");
-		return new IUserDetails(iu);
+		return new ArcticUserDetails(iu);
 	}
 	
 }
