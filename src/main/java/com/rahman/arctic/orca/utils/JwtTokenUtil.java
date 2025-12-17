@@ -72,7 +72,7 @@ public class JwtTokenUtil implements Serializable {
 	    return doGenerateToken(claims, claims.getSubject());
 	}
 	
-	public String generateToken(IUserDetails user, String deviceIP) {
+	public String generateToken(ArcticUserDetails user, String deviceIP) {
 		Map<String, Object> claims = new HashMap<>();
 		claims.put("last_password_reset", user.getLastPasswordReset());
 		claims.put("device_info", deviceIP);
@@ -100,7 +100,7 @@ public class JwtTokenUtil implements Serializable {
 		return !issuedAtDate.before(lastPasswordReset);
 	}
 	
-	public Boolean validateToken(String token, IUserDetails user) {
+	public Boolean validateToken(String token, ArcticUserDetails user) {
 		// If either of these are null, invalidate the token
 		if (token == null || user == null) return false;
 		final String username = getUsernameFromToken(token);
