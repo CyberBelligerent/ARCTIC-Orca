@@ -12,16 +12,14 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import com.rahman.arctic.orca.filters.CookieFilter;
 import com.rahman.arctic.orca.filters.JwtRequestFilter;
-import com.rahman.arctic.orca.utils.IUserService;
+import com.rahman.arctic.orca.utils.ArcticUserService;
 
 @Configuration
 @EnableJpaRepositories(basePackages = {"com.rahman.arctic.orca.repos"})
@@ -33,9 +31,6 @@ public class Orca {
 
 //	private final CookieFilter cookieFilter;
 
-	@Bean
-	UserDetailsService userDetailsService() {
-		return new IUserService();
 	public Orca(JwtRequestFilter jwt/*, CookieFilter cookie*/) {
 		System.out.println("Enabling Service: Orca");
 		jwtFilter = jwt;
@@ -48,9 +43,9 @@ public class Orca {
 	}
 
 	@Bean
-	DaoAuthenticationProvider authenticationProvider() {
+	DaoAuthenticationProvider authenticationProvider(ArcticUserService aus) {
 		DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-		authProvider.setUserDetailsService(userDetailsService());
+		authProvider.setUserDetailsService(aus);
 		authProvider.setPasswordEncoder(passwordEncoder());
 		return authProvider;
 	}
