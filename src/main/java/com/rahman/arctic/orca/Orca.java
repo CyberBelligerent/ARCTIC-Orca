@@ -45,22 +45,22 @@ public class Orca {
 	}
 
 	@Bean
-    public WebMvcConfigurer corsConfigurer()
-    {
-        return new WebMvcConfigurer() {
-            @Override
-            public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/**").allowedOrigins("http://localhost:5173").allowedHeaders("*").allowCredentials(true);;
-            }
-        };
-    }
-	
+	public WebMvcConfigurer corsConfigurer() {
+		return new WebMvcConfigurer() {
+			@Override
+			public void addCorsMappings(CorsRegistry registry) {
+				registry.addMapping("/**").allowedOrigins("http://localhost:5173")
+						.allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS").allowedHeaders("*")
+						.allowCredentials(true);
+			}
+		};
+	}
+
 	@Bean
 	SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		http
-			.csrf(csrf -> 
-				csrf.disable()
-				//csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+			.csrf(csrf -> csrf.disable())
+			.cors(cors -> {})
 		// csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
 			.authorizeHttpRequests(authorizeRequests -> authorizeRequests.anyRequest().permitAll()
 //					.requestMatchers(HttpMethod.POST, "/range-api/v1/authenticate").permitAll()
@@ -70,10 +70,11 @@ public class Orca {
 //					.requestMatchers("/iceberg-api/v1/**", "/range-api/v1/provider/*").hasAnyAuthority("ADMIN", "USER")
 //					.anyRequest().authenticated()
 			)
+			.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
 //		http.addFilterBefore(cookieFilter, UsernamePasswordAuthenticationFilter.class);
 		http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 		return http.build();
 	}
-	
+
 }
