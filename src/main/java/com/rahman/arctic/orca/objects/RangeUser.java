@@ -33,8 +33,8 @@ public class RangeUser {
 	private String username;
 	private String name;
 	private String password;
-	private String projectId;
-	private String tokenId;
+//	private String projectId;
+//	private String tokenId;
 	private Date passwordLastReset;
 	
 	@ManyToMany(fetch = FetchType.EAGER)
