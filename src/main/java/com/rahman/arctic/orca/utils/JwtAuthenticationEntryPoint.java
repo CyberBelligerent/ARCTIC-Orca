@@ -21,12 +21,10 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint, Se
 
 	private static final long serialVersionUID = -2646080989213895914L;
 
-	// If any user tries going to a webpage they are not supposed to be on, send them to /adminLogin
 	@Override
 	public void commence(HttpServletRequest request, HttpServletResponse response,
 			AuthenticationException authException) throws IOException, ServletException {
-//		response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
-		response.sendRedirect("/adminlogin");
+		response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
 	}
 	
 }
